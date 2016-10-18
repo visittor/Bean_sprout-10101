@@ -1,122 +1,51 @@
-//lab GPIO 1-1 output
-
 #include "mbed.h"
 
-DigitalOut myled(LED1);
-BusIn mysw(D5, D4, D3);
+BusOut led(D8,D9,D10,D11,D12,D13);
+BusIn sw(D6,D5,D4);
+DigitalOut pw(D7);
+
+int pat_1[16] = {1,2,4,8,16,32,1,2,4,8,16,32,63,0,63,0};
+int pat_2[16] = {32,16,8,4,2,1,1,2,4,8,16,32,63,0,63,0};
+int pat_3[15] = {63,0,62,60,56,48,32,0,32,48,56,60,62,63,0};
+int pat_4[13] = {5,10,20,40,32,40,20,10,5,0,63,0,1};
+int pat_5[8] = {129,66,36,24,36,66,129,255};
+int pat_6[35] = {1,2,4,8,16,32,64,128,129,130,132,136,160,192,193,194,196,200,208,224,225,226,228,232,240,241,242,244,248,249,250,252,253,254,255};
+int pat_7[9] = {255,231,195,129,0,129,195,231,255};
+int pat_8[35] = {255,254,253,252,250,249,248,244,242,241,240,232,228,226,225,224,208,200,196,194,193,192,160,136,132,130,129,128,64,32,16,8,4,2,1};
+
+int sww,max,x = 0;
 
 int main() {
     while(1) {
-        myled = 1; // LED is ON
-        wait(.1); // 200 ms
-        myled = 0; // LED is OFF
-        wait(.1); // 1 sec
-    }
-}
 
-//lab GPIO 1-2 output2
+        pw = 1;
+        sww = sw.read();
 
-/*
-#include "mbed.h"
+        printf("%d \n",sww);
 
-DigitalOut myled(LED1);
-DigitalOut myled2(D12);
-Timer t;
+        if (sww == 0){
+            led = pat_1[x];
+            max = 16;
+        }
+        else if (sww == 1){
+            led = pat_2[x];
+            max = 16;
+        }
+        else if (sww == 2){
+            led = pat_3[x];
+            max = 15;
+        }
+        else if (sww == 3){
+            led = pat_4[x];
+            max = 13;
+        }
 
-int main()
-{
-    t.start();
-    while(1) {
-        if(t.read_ms() <100) {
-            myled = 1; // LED is ON
-            myled2= 1;
-        } else if(t.read_ms() <400) {
-            myled = 0; // LED is OFF}
-            myled2= 1;
-        } else if(t.read_ms() <800)
-        {
-            myled = 0; // LED is OFF}
-            myled2= 0;
-            }
-        else{
-            t.reset();
+        wait(.1);
+        x += 1;
+
+        if (x >= max) {
+          x = 0;
         }
 
     }
 }
-*/
-
-// lab GPIO 1-3input and output
-/*
-#include "mbed.h"
-
-DigitalOut myled(LED1);
-DigitalIn mybutton(USER_BUTTON);
-
-int main()
-{
-    while(1) {
-
-        if(mybutton == 0) {
-            myled = 1; // LED is ON
-        } else {
-            myled = 0; // LED is OFF
-        }
-    }
-}
-*/
-
-//lab GPIO 1-4 input state
-/*
-#include "mbed.h"
-
-DigitalOut myled(LED1);
-DigitalOut myled2(D12);
-
-DigitalIn mybutton(USER_BUTTON);
-
-Timer t;
-
-int main()
-{
-    int state=0;
-    int timer_delay1=100,timer_delay2=200;
-    t.start();
-    while(1) {
-
-        if(mybutton == 0) {
-        //    wait_ms(10)
-            while(mybutton !=1) ;
-
-            if(state <2) {
-                state++;
-            } else {
-                state =0;
-            }
-
-        }
-
-        if(state == 0) {
-            timer_delay1 =100;
-            timer_delay2 =200;
-        } else if(state ==1) {
-            timer_delay1 =100;
-            timer_delay2 =500;
-        } else if(state ==2) {
-            timer_delay1 =500;
-            timer_delay2 =1000;
-        }
-
-        if(t.read_ms() <timer_delay1) {
-            myled = 1; // LED is ON
-            myled2= 0;
-        } else if(t.read_ms() <timer_delay2) {
-            myled = 0; // LED is OFF}
-            myled2= 1;
-        } else {
-            t.reset();
-        }
-
-    }
-}
-*/
