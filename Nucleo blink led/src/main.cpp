@@ -1,6 +1,6 @@
 #include "mbed.h"
 
-BusOut led(D8,D9,D10,D11,D12,D13);
+BusOut led(D6,D7,D8,D9,D10,D11,D12,D13);
 BusIn sw(D6,D5,D4);
 DigitalOut pw(D7);
 
