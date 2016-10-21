@@ -2,8 +2,8 @@
 #include "segment.h"
 
 AnalogIn analog_value(A1);
-BusOut led(D2,D3,D4,D5,D6,D7,D8,D9);
-DigitalIn sw(D10);
+BusOut led(D6,D14,D8,D9,D10,D11,D12,D13);
+DigitalIn sw(D15);
 
 
 void lab2_1(float analog_value);
@@ -76,7 +76,7 @@ void lab2_1(float analog_value) {
           led = 255;
           printf("LED255 \n");
         }
-        wait(0.2); // 200 ms
+        wait_ms(10); // 200 ms
 
 }
 // void Analog_to_7segment(float analog_value,BusOut& busout){
