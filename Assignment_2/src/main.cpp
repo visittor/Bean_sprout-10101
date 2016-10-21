@@ -1,7 +1,7 @@
 #include "mbed.h"
 #include "ledPatternControl.h"
 
-Serial pc(D8,D2);
+Serial pc(D1,D0);
 
 BusOut led(D7,D9,D10,D11,D12,D13,D14,D15);
 
@@ -25,6 +25,7 @@ int number_frame = 0;
 uint8_t next_number = '0';
 uint8_t current_number = '0';
 int showing = 0;
+int count = 0;
 
 uint8_t data;
 uint8_t choose_pattern;
@@ -52,6 +53,7 @@ int main() {
             next_number = pc.getc();
             current_number = next_number;
             number_frame = 0;
+            count = 0;
             if (current_number == '1'){
               pc.printf("LED Test\n");
               pc.printf("a.LED ON\n");
@@ -65,7 +67,12 @@ int main() {
       if (current_number == '1'){
           if (pc.readable()){
             data =pc.getc();
-            choose_pattern = data;
+            if (data == 'x'){
+
+            }
+            else{
+              choose_pattern = data;
+            }
             showing = 1;
           }
           switch (choose_pattern) {
@@ -86,6 +93,7 @@ int main() {
           data = pc.getc();
         }
         pc.printf("switch status = %d%d%d\n",sw4.read(),sw5.read(),sw6.read());
+        wait_ms(200);
       }
 
       else if (current_number=='3'){
@@ -93,17 +101,22 @@ int main() {
           data = pc.getc();
         }
         meas = analog_val.read();
-        pc.printf("analog value =  %f\n",meas );
+        pc.printf("analog value =  %f\n",meas*3.3 );
+        wait_ms(200);
       }
 
       if (data == 'x'){
-        pc.printf("************\n");
-        pc.printf("   Menu   \n");
-        pc.printf("************\n");
-        pc.printf("1.1\n");
-        pc.printf("2.2\n");
-        pc.printf("3.3\n");
-        next_number = '0';
+        if (count == 0){
+          pc.printf("************\n");
+          pc.printf("   Menu   \n");
+          pc.printf("************\n");
+          pc.printf("1.1\n");
+          pc.printf("2.2\n");
+          pc.printf("3.4\n");
+          next_number = '0';
+          count += 1;
+        }
+        data = '\n';
       }
 
 
