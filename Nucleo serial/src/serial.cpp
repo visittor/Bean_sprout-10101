@@ -6,10 +6,10 @@
 // 9600 bauds, 8-bit data, no parity
 //------------------------------------
 
-Serial pc(D1, D0);
+Serial pc(D8, D2);
 
 DigitalOut myled(LED1);
-BusOut led(D8,D9,D10,D11,D12,D13,D14,D15);
+BusOut led(D3,D9,D10,D11,D12,D13,D14,D15);
 
 int pat_1[16] = {1,2,4,8,16,32,1,2,4,8,16,32,63,0,63,0};
 int pat_2[16] = {32,16,8,4,2,1,1,2,4,8,16,32,63,0,63,0};
