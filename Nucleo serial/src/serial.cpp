@@ -6,15 +6,19 @@
 // 9600 bauds, 8-bit data, no parity
 //------------------------------------
 
-Serial pc(D8, D2);
+Serial pc(D1, D0);
 
 DigitalOut myled(LED1);
-BusOut led(D3,D9,D10,D11,D12,D13,D14,D15);
+BusOut led(D7,D9,D10,D11,D12,D13,D14,D15);
 
-int pat_1[16] = {1,2,4,8,16,32,1,2,4,8,16,32,63,0,63,0};
-int pat_2[16] = {32,16,8,4,2,1,1,2,4,8,16,32,63,0,63,0};
-int pat_3[15] = {63,0,62,60,56,48,32,0,32,48,56,60,62,63,0};
-int pat_4[13] = {5,10,20,40,32,40,20,10,5,0,63,0,1};
+DigitalIn sw4(D4);
+DigitalIn sw5(D5);
+DigitalIn sw6(D6);
+
+int pat_1[20] = {1,2,4,8,16,32,64,128,1,2,4,8,16,32,64,128,255,0,255,0};
+int pat_2[20] = {128,64,32,16,8,4,2,1,1,2,4,8,16,32,64,128,255,0,255,0};
+int pat_3[20] = {255,0,255,254,252,248,240,224,192,128,0,128,192,224,240,248,252,254,255,0};
+int pat_4[18] = {0,1,5,10,20,40,80,160,128,160,80,40,20,10,5,1,0,255};
 int pat_5[8] = {129,66,36,24,36,66,129,255};
 int pat_6[35] = {1,2,4,8,16,32,64,128,129,130,132,136,160,192,193,194,196,200,208,224,225,226,228,232,240,241,242,244,248,249,250,252,253,254,255};
 int pat_7[9] = {255,231,195,129,0,129,195,231,255};
@@ -53,9 +57,8 @@ int main()
                     do {
                             if(state_menu == 0 && showing == 0) {
                                 pc.printf("LED Test\n");
-                                pc.printf("a.LED ON\n");
-                                pc.printf("s.LED OFF\n");
-                                pc.printf("x.Exit\n");
+                                pc.printf("a and d to change LED pattern\n");
+                                pc.printf("s.Exit\n");
                                 state_menu = 1;
                             }
 
@@ -69,11 +72,11 @@ int main()
                                 case 'a':
                                     myled = 1;
                                     showing = 1;
-                                    show_pattern(pat_4, numPattern, led, 13);
+                                    show_pattern(pat_4, numPattern, led, 18);
                                     numPattern += 1;
                                     break;
 
-                                case 's':
+                                case 'x':
                                     myled =0;
                                     showing = 1;
                                     show_pattern(pat_7, numPattern, led, 9);
@@ -100,35 +103,30 @@ int main()
                                 case 'h':
                                     myled =0;
                                     showing = 1;
-                                    show_pattern(pat_4, numPattern, led, 13);
+                                    show_pattern(pat_4, numPattern, led, 18);
                                     numPattern += 1;
                                     break;
                                 case 'j':
                                     myled =0;
                                     showing = 1;
-                                    show_pattern(pat_3, numPattern, led, 15);
+                                    show_pattern(pat_3, numPattern, led, 20);
                                     numPattern += 1;
                                     break;
                                 case 'k':
                                     myled =0;
                                     showing = 1;
-                                    show_pattern(pat_2, numPattern, led, 16);
+                                    show_pattern(pat_2, numPattern, led, 20);
                                     numPattern += 1;
                                     break;
                                 case 'l':
                                     myled =0;
                                     showing = 1;
-                                    show_pattern(pat_1, numPattern, led, 16);
+                                    show_pattern(pat_1, numPattern, led, 20);
                                     numPattern += 1;
                                     break;
-                                case 'x':
+                                case 's':
+                                    led = 0 ;
                                     state_exit =1;
-
-                                    break;
-
-                                default:
-                                    pc.printf("plz select a or s\n");
-                                    pc.printf("\n\n %c",data);
                                     break;
                             }
 
@@ -141,11 +139,8 @@ int main()
 
                     do {
                         if(state_menu == 0) {
-                            pc.printf("Print Test\n");
-                            pc.printf("a.Print -Hello-\n");
-                            pc.printf("s.Print -Bye Bye-\n");
-                            pc.printf("x.Exit\n");
-                            state_menu = 1;
+                          pc.printf("switch status = %d%d%d\n",sw4.read(),sw5.read(),sw6.read());
+                          wait_ms(200);
                         }
                         if(pc.readable()) {
                             data = pc.getc();
@@ -153,28 +148,9 @@ int main()
                             state_menu=0;
 
                             switch(data) {
-
-                                case 'a':
-                                    pc.printf("--> Hello <-- \n\n");
-
-                                    break;
-
-                                case 's':
-                                    pc.printf("--> Bye Bye <-- \n\n");
-
-                                    break;
-
                                 case 'x':
                                     state_exit =1;
-
-
                                     break;
-
-                                default:
-                                    pc.printf("plz select a or s\n");
-                                    pc.printf("\n");
-                                    break;
-
                             }
                         }
                     } while(state_exit ==0);
