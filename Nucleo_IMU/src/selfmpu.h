@@ -149,7 +149,8 @@
 #define ZA_OFFSET_H      0x7D
 #define ZA_OFFSET_L      0x7E
 
-#define MPU_ADDRESS 0x68<<1
+// #define MPU_ADDRESS 0x68<<1
+#define MPU_ADDRESS 0x69<<1
 
 #define    GYRO_FULL_SCALE_250_DPS    0x00
 #define    GYRO_FULL_SCALE_500_DPS    0x08
@@ -165,6 +166,8 @@ uint8_t Gscale = GYRO_FULL_SCALE_250_DPS;
 uint8_t Ascale = ACC_FULL_SCALE_2_G;
 
 I2C i2c(I2C_SDA,I2C_SCL);
+// I2C i2c(A4,A5);
+
 
 
 

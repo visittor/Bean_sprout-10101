@@ -1,7 +1,8 @@
 #include "mbed.h"
 #include "ledPatternControl.h"
 
-Serial pc(D1,D0);
+// Serial pc(D1,D0);
+Serial pc(D8,D2);
 
 BusOut led(D7,D9,D10,D11,D12,D13,D14,D15);
 
@@ -60,13 +61,23 @@ int main() {
               pc.printf("s.LED OFF\n");
               pc.printf("x.Exit\n");
             }
+            // else if(current_number == '2'||current_number=='3'){
+            //   led = 0;
+            //   number_frame = 0;
+            //   data = '0';
+            // }
           }
         }
 
 
       if (current_number == '1'){
+          // pc.printf("%c %d\r",data,current_number );
+          // pc.printf("%d %d\r",data,current_number );
           if (pc.readable()){
-            data =pc.getc();
+            uint8_t dataTemp =pc.getc();
+            // pc.printf("%d %d\r",dataTemp,current_number );
+            if (dataTemp == 'a'||dataTemp=='d'||dataTemp=='s'||dataTemp=='x'){data = dataTemp;}
+            else{}
             if (data == 'x'){
 
             }
@@ -75,18 +86,23 @@ int main() {
             }
             showing = 1;
           }
-          switch (choose_pattern) {
-            case 'a':
-              show_pattern(pat_7,number_frame,led,9);
-              number_frame += 1;
-              break;
-            case 's':
-              show_pattern(pat_8,number_frame,led,35);
-              number_frame += 1;
-              break;
-          }
-
+          // pc.printf("%d %d\r",choose_pattern,current_number );
+          // switch (choose_pattern) {
+          //   case 'a':
+          //     show_pattern(pat_7,number_frame,led,9);
+          //     number_frame += 1;
+          //     break;
+          //   case 'd':
+          //     show_pattern(pat_8,number_frame,led,35);
+          //     number_frame += 1;
+          //     break;
+          //   case 's':
+          //     break;
+          // }
+          // pc.printf("wait\n");
+          // pc.printf("%d %d\r",dataTemp,current_number );
       }
+
 
       else if (current_number == '2'){
         if (pc.readable()){
@@ -104,8 +120,23 @@ int main() {
         pc.printf("analog value =  %f\n",meas*3.3 );
         wait_ms(200);
       }
+      switch (choose_pattern) {
+        case 'a':
+          show_pattern(pat_7,number_frame,led,9);
+          number_frame += 1;
+          break;
+        case 'd':
+          show_pattern(pat_8,number_frame,led,35);
+          number_frame += 1;
+          break;
+        case 's':
+          break;
+      }
 
       if (data == 'x'){
+        if (current_number=='2'||current_number=='3'||current_number=='1'){
+          current_number = '0';
+        }
         if (count == 0){
           pc.printf("************\n");
           pc.printf("   Menu   \n");
@@ -116,6 +147,7 @@ int main() {
           next_number = '0';
           count += 1;
         }
+
         data = '\n';
       }
 
