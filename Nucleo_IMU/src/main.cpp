@@ -1,13 +1,25 @@
 #include "mbed.h"
 #include "selfmpu.h"
+#include "TM1636.h"
+#include "ds1307.h"
 
 Serial pc(D1,D0);
 
 MPU9555 mpu;
 
+DS1307 ds1307(D14,D15);
+
+// DigitalOut ADO(D7);
+// TM1636 tm(D8,D7);
+// I2C myi2c(D7,D6);
+// DigitalOut pinH(PC_9);
+// Serial eiei(PC_6,PA_12);
+
 float gyroBias[3],accBias[3];
 
 int main(int argc, char const *argv[]) {
+  // ADO = 1;
+  /*Example interface imu*/
   i2c.frequency(400000);
 
   uint8_t whoami = mpu.readByte(MPU_ADDRESS,WHO_AM_I_MPU9250);
@@ -68,10 +80,45 @@ int main(int argc, char const *argv[]) {
     pc.printf("gz = %f\n",gz );
 
     wait_ms(500);
+}
+/**/
 
-  }
 
+/*Example using seven segment on clock shield */
+  // uint8_t data[4] = {0x00,0x01,0x02,0x03};
+  // tm.change_to_segment(data);
+  // tm.init(0x04);
+  // while (1) {
+  //   tm.display(data);
+  //   pc.printf("hello\n");
+  //   wait_ms(1);
+  // }
+/**/
+// while (1==1) {
+//   char data[1] = {0x01};
+//   pinH = 0;
+//   pinH = 1;
+//   pinH = 0;
+//   pinH = 1;
+//   myi2c.write(0x90, data, 1,1);
+//   eiei.printf("A\n");
+//   wait_ms(0.05);
+// }
 
+/*Example using realtime clock*/
+  // ds1307.twentyfour_hour();
+  // ds1307.start_clock();
+  // while(1==1){
+  //   int sec[1];
+  //   int min[1];
+  //   int hour[1];
+  //   int day[1];
+  //   int *date;
+  //   int *month;
+  //   int *year;
+  //   int test = ds1307.gettime(sec,min,hour,day,date,month,year);
+  //   printf("%d,%d,%d,test:%d\n",sec[0],min[0],hour[0],test);
+  // }
 
 
   return 0;
