@@ -81,7 +81,7 @@ void moveMap(uint8_t* map[8][8],int nextCenter[2],int mapsize[2],uint8_t* output
       output[i][j] = map[row][column];
     }
   }
-  output[3][3] = character;
+  output[4][3] = character;
 }
 
 int main(int argc, char const *argv[]) {
@@ -131,25 +131,25 @@ int main(int argc, char const *argv[]) {
     // pc.printf("ay = %f\t",ay );
     // pc.printf("az = %f\n",az );
 
-    if (ay<0.1 && ay>-0.1){}
+    if (ay<0.2 && ay>-0.2){}
     else if (ay>0){
-      if(frameCounty >= 150-(int)(ay*200)){
+      if(frameCounty >= 150-(int)(ay*150)){
         centerNow[1]++;
         centerNow[1] = centerNow[1]%7;
         frameCounty = 0;
       }
     }
     else if(ay<=0){
-      if(frameCounty >= 150+(int)(ay*200)){
+      if(frameCounty >= 150+(int)(ay*150)){
         centerNow[1]--;
         if (centerNow[1]<0){centerNow[1] = 8+(centerNow[1]%9);}
         else{centerNow[1] = centerNow[1]%7;}
         frameCounty = 0;
       }
     }
-    if (ax<0.1 && ax>-0.1){}
+    if (ax<0.2 && ax>-0.2){}
     else if (ax>0){
-      if(frameCountx >= 150-(int)(ax*200)){
+      if(frameCountx >= 150-(int)(ax*150)){
         pc.printf("%d\n", 150-(int)(ax*200));
         centerNow[0]++;
         centerNow[0] = centerNow[0]%7;
@@ -157,7 +157,7 @@ int main(int argc, char const *argv[]) {
       }
     }
     else if(ax<=0){
-      if(frameCountx >= 150+(int)(ax*200)){
+      if(frameCountx >= 150+(int)(ax*150)){
         pc.printf("%d\n", 150+(int)(ax*200));
         centerNow[0]=centerNow[0]-1;
         if (centerNow[0]<0){centerNow[0] = 8+(centerNow[0]%9);}
@@ -171,7 +171,7 @@ int main(int argc, char const *argv[]) {
     }
 
     moveMap(map,centerNow,mapsize,output);
-    color_s.display(map,4);
+    color_s.display(output,4);
     frameCountx= (frameCountx+1)%500;
     frameCounty= (frameCounty+1)%500;
     previousCenter[0] = centerNow[0];
