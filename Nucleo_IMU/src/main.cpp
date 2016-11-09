@@ -9,7 +9,7 @@ MPU9555 mpu;
 
 DS1307 ds1307(D14,D15);
 
-DigitalOut ADO(D7);
+// DigitalOut ADO(D7);
 // TM1636 tm(D8,D7);
 // I2C myi2c(D7,D6);
 // DigitalOut pinH(PC_9);
@@ -18,7 +18,7 @@ DigitalOut ADO(D7);
 float gyroBias[3],accBias[3];
 
 int main(int argc, char const *argv[]) {
-  ADO = 1;
+  // ADO = 1;
   /*Example interface imu*/
   i2c.frequency(400000);
 
