@@ -2,9 +2,9 @@
 #include "colorShield.h"
 #include "selfmpu.h"
 
-uint8_t wall[3] = {0,0,25};
+uint8_t wall[3] = {0,25,25};
 uint8_t path[3] = {0,0,0};
-uint8_t character[3] = {0,255,0};
+uint8_t character[3] = {255,255,0};
 Serial pc(D1,D0);
 Color_shield color_s;
 MPU9555 mpu;
@@ -15,8 +15,60 @@ int frameCountx = 0;
 int frameCounty = 0;
 int centerNow[2] = {3,3};
 int previousCenter[2] = {3,3};
-int mapsize[2] = {8,8};
+int mapsize[2] = {48,48};
 uint8_t *output[8][8];
+
+uint8_t *Bigmap[48][48] = {
+                            {wall,path,path,path,wall,wall,wall,wall,path,path,wall,wall,wall,wall,wall,wall,wall,path,wall,wall,wall,wall,wall,wall,wall,path,path,path,wall,wall,path,path,path,wall,path,wall,wall,wall,wall,path,path,wall,path,path,path,wall,path,path},
+                            {wall,path,path,path,wall,path,path,wall,path,path,wall,path,path,path,path,path,wall,path,path,path,path,path,wall,wall,wall,path,path,path,wall,wall,path,path,path,wall,path,path,path,path,path,path,path,wall,path,path,path,wall,path,path},
+                            {wall,path,path,path,wall,path,path,wall,path,path,wall,path,path,path,path,path,wall,path,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,path,path,path,wall,wall,wall,wall,wall,wall,wall,wall,wall,path,path,path,wall,path,path},
+                            {wall,path,path,path,wall,path,path,wall,path,path,wall,path,path,wall,path,path,wall,path,wall,wall,wall,wall,wall,path,path,wall,wall,wall,wall,wall,path,path,path,wall,path,path,path,path,path,path,path,path,path,path,path,wall,path,path},
+                            {wall,path,path,path,wall,path,path,wall,path,path,wall,path,path,wall,path,path,wall,path,path,path,path,path,path,path,path,wall,wall,path,path,path,path,path,path,wall,path,path,path,path,path,path,path,path,path,path,path,wall,path,path},
+                            {path,path,path,path,wall,path,path,wall,path,path,wall,path,path,wall,path,path,wall,wall,wall,wall,wall,wall,wall,path,path,wall,wall,path,path,path,path,path,path,wall,path,path,path,path,path,path,path,path,path,path,path,wall,path,path},
+                            {path,path,path,path,wall,path,path,wall,path,path,wall,path,path,wall,path,path,path,path,path,path,path,wall,wall,path,path,wall,wall,path,path,path,path,path,path,wall,path,path,path,wall,wall,wall,wall,wall,wall,path,path,wall,path,path},
+                            {path,path,path,path,wall,path,path,wall,path,path,wall,path,path,wall,path,path,path,path,path,path,path,wall,wall,path,path,wall,wall,path,path,path,wall,wall,wall,wall,path,path,path,wall,path,path,path,path,wall,path,path,wall,path,path},
+                            {wall,wall,wall,wall,wall,path,path,wall,path,path,wall,path,path,wall,wall,wall,wall,wall,wall,wall,path,wall,wall,path,path,wall,wall,path,path,path,wall,wall,wall,wall,path,path,path,wall,path,wall,wall,path,wall,path,path,wall,wall,wall},
+                            {path,path,path,path,path,path,path,wall,path,path,wall,path,path,wall,path,path,path,path,path,path,path,path,path,path,path,path,wall,path,path,path,wall,wall,wall,wall,path,path,path,wall,path,wall,wall,path,wall,path,path,path,path,path},
+                            {path,path,path,path,path,path,path,wall,path,path,wall,path,path,wall,wall,wall,wall,wall,wall,path,wall,wall,wall,wall,wall,wall,wall,path,path,path,wall,wall,wall,wall,path,path,path,wall,path,wall,wall,path,wall,path,path,path,path,path},
+                            {wall,wall,wall,wall,wall,wall,wall,wall,path,path,wall,path,path,path,path,path,path,wall,wall,path,wall,wall,path,path,path,path,wall,path,path,path,path,path,path,path,path,path,path,wall,path,wall,wall,path,wall,path,path,wall,wall,wall},
+                            {path,path,path,path,path,path,path,path,path,path,wall,path,path,path,path,path,path,wall,wall,wall,wall,wall,path,path,path,path,wall,path,path,path,path,path,path,path,path,path,path,wall,path,wall,path,path,wall,path,path,wall,path,path},
+                            {wall,wall,wall,wall,wall,wall,wall,wall,path,path,wall,wall,path,wall,path,path,path,path,path,path,path,wall,path,path,wall,path,wall,path,path,path,path,path,path,path,path,path,path,wall,path,wall,wall,wall,wall,wall,wall,wall,wall,wall},
+                            {path,path,path,path,path,path,path,path,path,path,wall,wall,path,wall,path,path,path,path,path,path,path,wall,path,path,wall,path,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,path,path,path,path,path,path,path,path,path,path},
+                            {path,path,path,path,path,path,path,path,path,path,wall,wall,path,wall,path,path,path,path,path,path,path,wall,path,path,wall,path,wall,wall,wall,wall,wall,wall,wall,path,path,path,path,wall,path,path,path,path,path,path,path,path,path,path},
+                            {wall,wall,wall,wall,wall,path,path,wall,wall,wall,wall,wall,path,wall,path,path,path,wall,wall,wall,wall,wall,path,path,wall,path,path,path,path,path,path,path,path,path,path,path,path,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall},
+                            {wall,wall,wall,wall,wall,path,path,wall,wall,wall,wall,wall,path,wall,path,path,path,wall,wall,wall,wall,wall,path,path,wall,wall,wall,wall,wall,path,path,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall},
+                            {path,wall,path,path,path,path,path,wall,path,path,path,path,path,wall,path,path,path,wall,path,path,path,path,path,path,path,path,wall,path,wall,path,path,wall,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path},
+                            {path,wall,path,path,path,path,path,wall,wall,wall,wall,wall,wall,wall,path,path,path,wall,path,path,path,path,path,path,path,path,wall,path,wall,path,path,wall,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path},
+                            {path,wall,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path,wall,path,path,path,path,path,path,path,path,wall,path,wall,path,path,wall,path,path,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,path},
+                            {wall,wall,wall,wall,wall,path,path,path,path,path,path,path,path,path,path,path,path,wall,path,path,path,wall,wall,wall,path,path,wall,path,wall,path,path,wall,path,path,wall,path,path,path,path,path,path,path,path,path,path,path,wall,path},
+                            {path,path,path,path,wall,path,path,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,path,path,path,wall,wall,wall,path,path,wall,path,path,path,path,wall,path,path,wall,path,path,path,path,path,path,path,path,path,path,path,wall,path},
+                            {path,path,path,path,wall,path,path,wall,wall,path,path,path,path,path,path,path,path,path,path,path,path,wall,wall,wall,path,path,wall,path,path,path,path,wall,path,path,wall,path,path,path,path,path,path,path,path,path,path,path,wall,path},
+                            {path,path,path,path,wall,path,path,wall,wall,path,path,path,path,path,path,path,path,path,path,path,path,wall,wall,wall,path,path,wall,wall,wall,wall,wall,wall,path,path,wall,path,path,path,wall,path,path,wall,wall,wall,path,path,wall,path},
+                            {wall,path,path,path,wall,path,path,wall,wall,path,path,path,path,path,path,path,path,path,path,path,path,wall,wall,wall,path,path,path,path,path,path,path,path,path,path,wall,path,path,path,wall,path,path,path,path,wall,path,path,wall,wall},
+                            {wall,path,path,path,wall,path,path,wall,wall,path,path,path,wall,wall,path,path,path,wall,wall,wall,wall,wall,wall,wall,path,path,path,path,path,path,path,path,path,path,wall,path,path,path,wall,path,path,wall,path,wall,path,path,wall,wall},
+                            {wall,path,path,path,wall,path,path,wall,wall,path,path,path,wall,wall,path,path,path,wall,wall,wall,wall,wall,wall,wall,path,path,path,path,path,path,path,path,path,path,wall,path,path,path,wall,path,path,wall,path,wall,path,path,wall,wall},
+                            {wall,path,path,path,wall,path,path,path,path,path,path,path,wall,wall,path,path,path,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,path,path,path,wall,path,path,wall,path,wall,path,path,wall,wall},
+                            {wall,path,path,path,wall,path,path,path,path,path,path,path,wall,wall,path,path,path,wall,wall,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path,wall,path,path,wall,path,wall,path,path,wall,wall},
+                            {wall,path,path,path,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,path,path,path,wall,wall,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path,wall,path,path,wall,path,wall,path,path,wall,wall},
+                            {path,path,path,path,wall,path,path,path,path,path,path,path,path,path,path,path,path,wall,wall,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path,wall,path,path,wall,path,wall,path,path,path,path},
+                            {path,path,path,path,wall,path,path,path,path,path,path,path,path,path,path,path,path,wall,wall,path,path,path,wall,wall,wall,path,path,path,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,path,path,wall,path,wall,path,path,path,path},
+                            {wall,wall,path,path,wall,path,path,path,path,path,path,path,path,path,path,path,path,wall,wall,path,path,path,wall,wall,wall,path,path,path,wall,path,path,path,path,path,path,path,path,path,path,path,path,wall,path,wall,wall,wall,wall,wall},
+                            {path,wall,path,path,wall,wall,wall,wall,path,wall,wall,wall,path,path,path,wall,wall,wall,wall,path,path,path,wall,wall,wall,path,path,path,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,path,path,wall,path,path,path,path,path,path},
+                            {wall,wall,wall,wall,wall,wall,wall,wall,path,path,path,wall,path,path,path,wall,wall,wall,wall,path,path,path,wall,wall,wall,path,path,path,path,path,path,path,path,path,path,path,path,path,wall,path,path,wall,wall,wall,wall,wall,wall,wall},
+                            {path,path,path,path,path,path,path,wall,path,wall,path,wall,path,path,path,wall,wall,wall,wall,path,path,path,wall,wall,wall,path,path,path,path,path,path,path,path,path,path,path,path,path,wall,path,path,wall,wall,path,path,path,path,path},
+                            {path,path,path,path,path,path,path,wall,path,wall,path,wall,path,path,path,wall,wall,wall,wall,path,path,path,wall,wall,wall,path,path,path,path,path,path,path,path,path,path,path,path,path,wall,path,path,wall,wall,path,path,path,path,path},
+                            {path,path,path,path,path,path,path,wall,path,wall,path,wall,path,path,path,wall,wall,wall,wall,path,path,path,wall,wall,wall,wall,wall,wall,wall,wall,path,path,path,wall,wall,path,path,path,wall,path,path,wall,wall,path,path,path,path,path},
+                            {wall,wall,wall,wall,path,path,path,wall,path,wall,path,wall,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path,wall,wall,path,path,path,wall,wall,path,path,path,wall,path,path,wall,wall,wall,wall,wall,wall,wall},
+                            {path,path,path,wall,path,path,path,wall,path,wall,path,wall,wall,wall,path,path,path,path,path,path,path,path,path,path,path,path,path,path,wall,wall,path,path,path,wall,wall,path,path,path,wall,path,path,wall,path,path,path,path,path,path},
+                            {path,path,path,wall,path,path,path,wall,path,wall,path,wall,wall,wall,path,path,path,path,path,path,path,path,path,path,path,path,path,path,wall,wall,path,path,path,wall,wall,path,path,path,wall,path,path,wall,path,path,path,path,path,path},
+                            {path,path,path,wall,path,path,path,wall,path,wall,path,path,path,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,path,path,path,wall,wall,path,path,path,wall,wall,path,path,path,wall,path,path,wall,path,path,path,path,path,path},
+                            {wall,wall,wall,wall,path,path,path,wall,wall,wall,wall,wall,path,path,path,path,path,path,path,path,path,path,path,path,wall,path,path,path,wall,wall,path,path,path,wall,wall,path,path,path,wall,path,path,wall,path,path,path,wall,wall,wall},
+                            {path,path,path,path,path,path,path,path,path,path,path,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,wall,path,path,path,wall,wall,path,path,path,wall,wall,path,path,path,wall,path,path,wall,path,path,path,wall,path,path},
+                            {path,path,path,path,path,path,path,path,path,path,path,wall,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path,wall,wall,path,path,path,wall,wall,path,path,path,wall,path,path,wall,path,path,path,wall,path,path},
+                            {path,path,path,path,path,path,path,path,path,path,path,wall,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path,wall,wall,path,path,path,wall,wall,path,path,path,wall,path,path,wall,path,path,path,wall,path,path},
+                            {wall,path,path,path,wall,wall,wall,wall,path,path,wall,wall,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path,path,wall,wall,path,path,path,wall,wall,wall,wall,wall,wall,path,path,wall,path,path,path,wall,path,path},
+                          };
+
 uint8_t *map[8][8] = {{wall,wall,wall,path,path,wall,wall,wall},
                       {wall,wall,wall,path,path,wall,wall,wall},
                       {wall,wall,wall,path,path,wall,wall,wall},
@@ -65,26 +117,35 @@ uint8_t pat_3[8][8][3] ={     {{21,0,0},{17,0,0},{13,0,0},{9,13,0},{5,17,0},{1,2
                               {{0,25,0},{0,21,1},{0,17,5},{0,13,9},{0,0,13},{0,0,17},{0,0,21},{0,0,25}},
                               {{25,0,0},{21,0,0},{17,0,0},{13,0,0},{9,13,0},{5,17,0},{1,21,0},{0,25,0}},
                           };
+void random_spawn(int *ran_res,int max_x,int min_x,int max_y,int min_y){
+  int x_axis = rand()%(max_x-min_x+1)+(min_x-1);
+  int y_axis = rand()%(max_y-min_y+1)+(min_y-1);
+  ran_res[0] = x_axis;
+  ran_res[1] = y_axis;
+  pc.printf("%d %d\n",ran_res[0],ran_res[1]);
 
-void moveMap(uint8_t* map[8][8],int nextCenter[2],int mapsize[2],uint8_t* output[8][8]){
+}
+
+void moveMap(uint8_t* map[48][48],int nextCenter[2],int mapsize[2],uint8_t* output[8][8]){
   int row,column;
   for (int i=0;i<8;i++){
     for(int j=0;j<8;j++){
-      row = 3-(nextCenter[0]%8)+i;
-      column = (nextCenter[1]%8)-3+j;
+      row = (nextCenter[1]%48)-3+i;
+      column = (nextCenter[0]%48)-3+j;
       if (row>=0 && row<mapsize[0]){}
-      else if(row<0){row = mapsize[0]+(row%9);}
-      else if(row>=mapsize[0]){row = row%8;}
+      else if(row<0){row = mapsize[0]+(row%49);}
+      else if(row>=mapsize[0]){row = row%48;}
       if(column>=0 && column<mapsize[1]){}
-      else if(column<0){column = mapsize[1]+(column%9);}
-      else if(column>=mapsize[1]){column = column%8;}
+      else if(column<0){column = mapsize[1]+(column%49);}
+      else if(column>=mapsize[1]){column = column%48;}
       output[i][j] = map[row][column];
     }
   }
-  output[4][3] = character;
+  output[3][3] = character;
 }
 
 int main(int argc, char const *argv[]) {
+  MPU_ADDRESS = 0x68<<1;
 
   i2c.frequency(400000);
   color_s.init();
@@ -118,6 +179,20 @@ int main(int argc, char const *argv[]) {
     pc.printf("%#x \n",  whoami);
     while(1);
   }
+  int ran_res_eiei[2];
+  srand(time(NULL));
+  while(1){
+    random_spawn(ran_res_eiei,48,8,48,8);
+    centerNow[0] = ran_res_eiei[0];
+    centerNow[1] = ran_res_eiei[1];
+    if (Bigmap[centerNow[1]][centerNow[0]][0]==wall[0] && Bigmap[centerNow[1]][centerNow[0]][1]==wall[1] && Bigmap[centerNow[1]][centerNow[0]][2]==wall[2]){
+    }
+    else{
+      break;
+    }
+  }
+  pc.printf("%d %d\n",centerNow[0],centerNow[1] );
+
 
 
 
@@ -128,50 +203,55 @@ int main(int argc, char const *argv[]) {
     float ax = (float)data[0]*ares - accBias[0];
     float ay = (float)data[1]*ares - accBias[1];
     // pc.printf("ax = %f\t",ax );
-    // pc.printf("ay = %f\t",ay );
+    // pc.printf("ay = %f\t\n",ay );
     // pc.printf("az = %f\n",az );
+    // pc.printf("%i \n",rand()%100 + 1);
+
+
 
     if (ay<0.2 && ay>-0.2){}
     else if (ay>0){
-      if(frameCounty >= 150-(int)(ay*150)){
+      if(frameCounty >= 150-(int)(ay*100)){
         centerNow[1]++;
-        centerNow[1] = centerNow[1]%7;
+        centerNow[1] = centerNow[1]%48;
         frameCounty = 0;
       }
     }
     else if(ay<=0){
-      if(frameCounty >= 150+(int)(ay*150)){
+      if(frameCounty >= 150+(int)(ay*100)){
         centerNow[1]--;
-        if (centerNow[1]<0){centerNow[1] = 8+(centerNow[1]%9);}
-        else{centerNow[1] = centerNow[1]%7;}
+        if (centerNow[1]<0){centerNow[1] = 48+(centerNow[1]%49);}
+        else{centerNow[1] = centerNow[1]%48;}
         frameCounty = 0;
       }
     }
     if (ax<0.2 && ax>-0.2){}
     else if (ax>0){
-      if(frameCountx >= 150-(int)(ax*150)){
-        pc.printf("%d\n", 150-(int)(ax*200));
+      if(frameCountx >= 150-(int)(ax*100)){
+        // pc.printf("%d\n", 150-(int)(ax*200));
         centerNow[0]++;
-        centerNow[0] = centerNow[0]%7;
+        centerNow[0] = centerNow[0]%48;
         frameCountx = 0;
       }
     }
     else if(ax<=0){
-      if(frameCountx >= 150+(int)(ax*150)){
-        pc.printf("%d\n", 150+(int)(ax*200));
+      if(frameCountx >= 150+(int)(ax*100)){
+        // pc.printf("%d\n", 150+(int)(ax*200));
         centerNow[0]=centerNow[0]-1;
-        if (centerNow[0]<0){centerNow[0] = 8+(centerNow[0]%9);}
-        else{centerNow[0] = centerNow[0]%7;}
+        if (centerNow[0]<0){centerNow[0] = 48+(centerNow[0]%49);}
+        else{centerNow[0] = centerNow[0]%48;}
         frameCountx = 0;
       }
     }
-    if (map[centerNow[0]][centerNow[1]][0]==wall[0] && map[centerNow[0]][centerNow[1]][1]==wall[1] && map[centerNow[0]][centerNow[1]][2]==wall[2]){
+    if (Bigmap[centerNow[1]][centerNow[0]][0]==wall[0] && Bigmap[centerNow[1]][centerNow[0]][1]==wall[1] && Bigmap[centerNow[1]][centerNow[0]][2]==wall[2]){
       centerNow[0] = previousCenter[0];
       centerNow[1] = previousCenter[1];
     }
-
-    moveMap(map,centerNow,mapsize,output);
-    color_s.display(output,4);
+    // centerNow[0] = 19;
+    // centerNow[1] = 19;
+    // pc.printf("%d %d\n",centerNow[0],centerNow[1] );
+    moveMap(Bigmap,centerNow,mapsize,output);
+    color_s.display(output,8);
     frameCountx= (frameCountx+1)%500;
     frameCounty= (frameCounty+1)%500;
     previousCenter[0] = centerNow[0];
